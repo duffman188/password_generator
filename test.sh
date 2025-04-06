@@ -203,6 +203,59 @@ else
     exit 1
 fi
 
+# Test 13: Test with large password length (1000 characters)
+output=$(./pwgen 1000 1 -lud)
+if [[ ${#output} -gt 1000 ]]; then
+    echo "Fail: Test 13 failed, password exceeds length limit"
+    echo "$output"
+    exit 1
+else
+    echo "Pass: Test 13 passed"
+fi
+
+# Test 14: Large quantity of passwords (100 passwords)
+output=$(./pwgen 8 100 -lud)
+if [[ $(echo "$output" | grep -c "Password") -eq 100 ]]; then
+    echo "Pass: Test 14 passed"
+else
+    echo "Fail: Test 14 failed"
+    echo "$output"
+    exit 1
+fi
+
+# Test 15: Test with empty alphabet (should show an error)
+output=$(./pwgen 8 1 "")
+expected_output="Error: No valid characters in alphabet."
+if [[ "$output" == *"$expected_output"* ]]; then
+    echo "Pass: Test 15 passed"
+else
+    echo "Fail: Test 15 failed"
+    echo "$output"
+    exit 1
+fi
+
+# Test 16: Non-ASCII characters in the alphabet (should trigger a warning)
+output=$(./pwgen 8 2 -lud "abc\x80")
+expected_output="Warning: Non-graphical character detected, skipping."
+if [[ "$output" == *"$expected_output"* ]]; then
+    echo "Pass: Test 16 passed"
+else
+    echo "Fail: Test 16 failed"
+    echo "$output"
+    exit 1
+fi
+
+# Test 17: Invalid command (missing arguments)
+output=$(./pwgen)
+expected_output="Error: Both length and quantity must be specified."
+if [[ "$output" == *"$expected_output"* ]]; then
+    echo "Pass: Test 17 passed"
+else
+    echo "Fail: Test 17 failed"
+    echo "$output"
+    exit 1
+fi
+
 echo
 echo "All tests passed."
 exit 0
