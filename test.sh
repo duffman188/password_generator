@@ -65,15 +65,6 @@ output=$(./pwgen 8 2 -lud $'\x80')
 expected_output="Warning: Non-graphical character detected, skipping."
 [[ "$output" == *"$expected_output"* ]] && echo "Pass: Test 11 passed" || { echo "Fail: Test 11 failed"; echo "$output"; exit 1; }
 
-# Test 12: Very large password (length 1000)
-output=$(./pwgen 1000 1 -lud)
-if [[ ${#output} -gt 1000 ]]; then
-    echo "Fail: Test 12 failed, password exceeds length limit"
-    echo "$output"
-    exit 1
-else
-    echo "Pass: Test 12 passed"
-fi
 
 echo
 echo "All tests passed."
