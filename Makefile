@@ -1,37 +1,23 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11 -g
+CFLAGS = -Wall -g
+OBJS = main.o alphabet.o information_content.o pw_generator.o
 
-# Source files
-SRC = main.c alphabet.c information_content.c pw_generator.c
-OBJ = $(SRC:.c=.o)
-EXEC = pwgen
+all: pwgen
 
-# Output and test files
-TEST_SCRIPT = test.sh
+pwgen: $(OBJS)
+	$(CC) $(OBJS) -o pwgen
 
-# Default target: build the program
-all: $(EXEC)
+main.o: main.c alphabet.h information_content.h pw_generator.h
+	$(CC) $(CFLAGS) -c main.c
 
-# Rule for building the executable
-$(EXEC): $(OBJ)
-	$(CC) $(OBJ) -o $(EXEC)
+alphabet.o: alphabet.c alphabet.h
+	$(CC) $(CFLAGS) -c alphabet.c
 
-# Rule for compiling .c files into .o files
-%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+information_content.o: information_content.c information_content.h
+	$(CC) $(CFLAGS) -c information_content.c
 
-# Clean up compiled files
+pw_generator.o: pw_generator.c pw_generator.h
+	$(CC) $(CFLAGS) -c pw_generator.c
+
 clean:
-	rm -f $(OBJ) $(EXEC)
-
-# Run tests after building
-test: $(EXEC)
-	@echo "Running tests..."
-	@chmod +x $(TEST_SCRIPT)
-	@./$(TEST_SCRIPT)
-
-# Rebuild everything (clean and then all)
-rebuild: clean all
-
-# Phony targets
-.PHONY: all clean test rebuild
+	rm -f *.o pwgen
