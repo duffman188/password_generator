@@ -1,51 +1,38 @@
-/* 
-Name
-Date
-Course
-*/
+// main.c
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
-#include <ctype.h>
 #include "alphabet.h"
 #include "information_content.h"
 #include "pw_generator.h"
 
-#define MAX_ALPHABET_SIZE 256
+#define MAX_ALPHABET_SIZE 128
 
-// Function prototypes
-void parse_arguments(int argc, char *argv[], int *length, int *quantity, int *alphabet_flags, char **alphabet);
-void generate_passwords(int length, int quantity, int *alphabet_flags, char *alphabet);
+// Function to parse command-line arguments
+void parse_arguments(int argc, char *argv[], int *length, int *quantity, char *flags, char *alphabet);
 
 int main(int argc, char *argv[]) {
     int length, quantity;
-    char flags[5] = "";  // Buffer for flags
+    char flags[5] = "";
     char alphabet[MAX_ALPHABET_SIZE] = "";
 
+    // Parse command-line arguments
     parse_arguments(argc, argv, &length, &quantity, flags, alphabet);
 
-    // Create the final alphabet using the union of groups and user input
+    // Create the available characters array (to be used for password generation)
     char available_chars[MAX_ALPHABET_SIZE] = {0};
-    get_alphabet_union(flags, alphabet, available_chars);
 
-    // Check if all characters in the alphabet are valid graphical ASCII characters
-    validate_alphabet(alphabet);
+    // Determine available characters based on flags and custom alphabet
 
-    // Seed the PRNG to ensure randomness
-    srand(time(NULL));  // Randomize seed for different output each time
+    // Seed random number generator
 
-    // Generate and print passwords
+    // Generate and display passwords
     for (int i = 0; i < quantity; i++) {
-        char password[length + 1];  // +1 for the null terminator
-        generate_password(password, length, available_chars);  // Generate password
+        char password[length + 1];
+        // Generate the password
 
-        // Calculate the information content of the generated password
-        double info_content = calculate_information_content(password, available_chars);
-
-        // Print the generated password and its information content
-        printf("Password %d:\nPassword: %s\nInformation content: %.2f bits\n", i + 1, password, info_content);
+        // Calculate information content (entropy) and display the result
     }
 
     return 0;
