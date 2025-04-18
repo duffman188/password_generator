@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     build_alphabet(flags, alphabet, available_chars);
 
     // DEBUG
-    printf("DEBUG: available_chars = \"%s\"\n", available_chars);
+    //printf("DEBUG: available_chars = \"%s\"\n", available_chars);
 
     int alphabet_size = strlen(available_chars);
     if (strlen(alphabet) > 0 && alphabet_size == 0) {
