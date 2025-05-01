@@ -1,44 +1,50 @@
 // alphabet.c
 
 #include <stdio.h>
-#include <string.h>     // For strlen, strncat, strchr
-#include "alphabet.h"   // For MAX_ALPHABET_SIZE and function declarations
+#include <string.h>
 #include <ctype.h>
+#include "alphabet.h"
+
 void build_alphabet(const char *flags, const char *custom, char *result) {
     const char *lower = "abcdefghijklmnopqrstuvwxyz";
     const char *upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const char *digits = "0123456789";
     const char *symbols = "!@#$%^&*()_+-=[]{}|;:',.<>/?";
 
-    result[0] = '\0';
+    int ascii[128] = {0};  // Track characters to avoid duplicates
 
-    // Handle custom alphabet
+    // Add characters from -luds flags
+    if (strchr(flags, 'l')) {
+        for (int i = 0; lower[i]; i++) ascii[(unsigned char)lower[i]] = 1;
+    }
+    if (strchr(flags, 'u')) {
+        for (int i = 0; upper[i]; i++) ascii[(unsigned char)upper[i]] = 1;
+    }
+    if (strchr(flags, 'd')) {
+        for (int i = 0; digits[i]; i++) ascii[(unsigned char)digits[i]] = 1;
+    }
+    if (strchr(flags, 's')) {
+        for (int i = 0; symbols[i]; i++) ascii[(unsigned char)symbols[i]] = 1;
+    }
+
+    // Add custom characters if graphical
     if (custom && strlen(custom) > 0) {
-        int pos = 0;
-        for (int i = 0; custom[i] != '\0' && pos < MAX_ALPHABET_SIZE - 1; i++) {
-            if (isgraph((unsigned char)custom[i])) {
-                result[pos++] = custom[i];
+        for (int i = 0; custom[i]; i++) {
+            unsigned char c = (unsigned char)custom[i];
+            if (isgraph(c)) {
+                ascii[c] = 1;
             } else {
                 printf("Warning: Non-graphical character detected, skipping.\n");
             }
         }
-        result[pos] = '\0';
-        return;
     }
 
-    // Otherwise build from flags
-    if (strchr(flags, 'l')) strncat(result, lower, MAX_ALPHABET_SIZE - strlen(result) - 1);
-    if (strchr(flags, 'u')) strncat(result, upper, MAX_ALPHABET_SIZE - strlen(result) - 1);
-    if (strchr(flags, 'd')) strncat(result, digits, MAX_ALPHABET_SIZE - strlen(result) - 1);
-    if (strchr(flags, 's')) strncat(result, symbols, MAX_ALPHABET_SIZE - strlen(result) - 1);
-}
-
-// Optional stub for alternate logic (can be integrated with build_alphabet)
-void get_alphabet_union(const char *flags, const char *user_alphabet, char *available_chars) {
-    // Optional: Implement if needed separately from build_alphabet
-}
-
-// Optional stub for validation
-void validate_alphabet(const char *alphabet) {
-    // Optional: Add validation logic to check for invalid or repeated characters
+    // Populate result string from ascii map
+    int pos = 0;
+    for (int i = 0; i < 128 && pos < MAX_ALPHABET_SIZE - 1; i++) {
+        if (ascii[i]) {
+            result[pos++] = (char)i;
+        }
+    }
+    result[pos] = '\0';
 }
